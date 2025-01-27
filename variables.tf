@@ -21,3 +21,5 @@ variable "vpc_id" {
 variable "subnet_id" {
   default = "subnet-01f55b8554ffab218"  # Replace with your existing Subnet ID
 }
+
+

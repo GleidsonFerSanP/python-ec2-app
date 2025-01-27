@@ -20,7 +20,7 @@ logger.setLevel(logging.INFO)
 
 def store_on_pinacone(chunk, embeddings, document_key, i):
     try:
-        logger.info("store_on_pinacone invoked with chunk: %s and embeddings: %s", chunk, embeddings)
+        logger.info("store_on_pinacone invoked with chunk: %s and embeddings: %s", len(chunk), len(embeddings))
         
         # Store in Pinecone
         index.upsert(vectors=[

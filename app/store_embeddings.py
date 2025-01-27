@@ -16,8 +16,8 @@ def store(chunk, embeddings, document_key, i):
         i (int): The index of the chunk.
     """
     try:
-        logger.info("store() invoked with chunk: %s, document_key: %s, index: %d", chunk, document_key, i)
-        logger.debug("Embeddings: %s", embeddings)
+        logger.info("store() invoked with chunks size: %s, document_key: %s, index: %d", len(chunk), document_key, i)
+        logger.debug("Embeddings: %s", len(embeddings))
         
         logger.info("Storing chunk and embedding in Pinecone")
         store_on_pinacone(chunk, embeddings, document_key, i)

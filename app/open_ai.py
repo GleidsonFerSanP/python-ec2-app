@@ -27,8 +27,6 @@ def generate_answer_with_context(retrieved_docs, query_text):
         str: The generated answer.
     """
     try:
-        # Build context for OpenAI completion
-        # Build context for OpenAI completion
         context = "\n".join(retrieved_docs)
         prompt = f"Context: {context}\n\nQuestion: {query_text}\nAnswer:"
 

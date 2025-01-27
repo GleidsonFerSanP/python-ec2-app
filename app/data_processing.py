@@ -32,13 +32,13 @@ def generate_chunks(document_text):
 def generate_embeddings(chunk):
     try:
         # Log the chunk as JSON
-        logger.info("Generating embedding for a chunk: %s", json.dumps(chunk, indent=2))
+        logger.info("Generating embedding for a chunks: %s", len(chunk))
         
         # Generate the embedding
         response = embeddings.embed_query(chunk)
         
         # Log the embedding as JSON
-        logger.info("Generated embedding successfully: %s", json.dumps(response, indent=2))
+        logger.info("Generated embedding successfully")
         
         return response
     except Exception as e:

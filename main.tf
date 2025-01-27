@@ -29,34 +29,77 @@ resource "aws_security_group" "web_sg" {
 
 # EC2 Instance
 resource "aws_instance" "python_app" {
-  ami                    = "ami-0c55b159cbfafe1f0"  # Ubuntu 22.04 Free-tier
+  ami                    = "ami-0ac4dfaf1c5c0cce9"  # Ubuntu 22.04 Free-tier
   instance_type          = "t2.micro"
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
-  key_name               = "my-key"  # Replace with your AWS SSH key
+  key_name               = "my-new-key"  # Replace with your AWS SSH key
   associate_public_ip_address = true
 
   # User data script to install dependencies and run app
   user_data = <<-EOF
-              #!/bin/bash
-              sudo apt update -y
-              sudo apt install -y python3 python3-pip unzip
+    #!/bin/bash
+    set -e
 
-              # Download app from S3 or GitHub (if applicable)
-              # Example: Uncomment if using GitHub
-              git clone https://github.com/GleidsonFerSanP/python-ec2-app.git /home/ubuntu/app
+    # Update system
+    sudo apt update -y
 
-              # Copy your local app folder (OPTION 2: Manually upload it after EC2 creation)
-              # mkdir -p /home/ubuntu/app
+    # Install required packages
+    sudo apt install -y nginx python3 python3-pip git
 
-              # Install dependencies
-              if [ -f "/home/ubuntu/app/requirements.txt" ]; then
-                  pip install -r /home/ubuntu/app/requirements.txt
-              fi
+    # Clone the Flask App from GitHub
+    sudo rm -rf /opt/flask_app
+    sudo git clone https://github.com/GleidsonFerSanP/python-ec2-app.git /opt/flask_app
 
-              # Run the Flask app (assuming app.py is in the root of 'app' folder)
-              nohup python3 /home/ubuntu/app/app.py > /home/ubuntu/app.log 2>&1 &
-              EOF
+    # Install Flask dependencies
+    sudo pip3 install -r /opt/flask_app/requirements.txt
+
+    # Create Nginx Configuration
+    cat <<'NGINX_CONF' | sudo tee /etc/nginx/sites-available/flask_app
+    server {
+        listen 80;
+        server_name _;
+
+        location /rag/ {
+            proxy_pass http://127.0.0.1:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        error_page 502 503 504 /error.html;
+    }
+    NGINX_CONF
+
+    # Enable the new Nginx configuration
+    sudo ln -s /etc/nginx/sites-available/flask_app /etc/nginx/sites-enabled/
+    sudo rm -f /etc/nginx/sites-enabled/default
+    sudo systemctl restart nginx
+
+    # Create a systemd service for Flask using Gunicorn
+    cat <<'SERVICE' | sudo tee /etc/systemd/system/flask_app.service
+    [Unit]
+    Description=Flask Application
+    After=network.target
+
+    [Service]
+    User=root
+    WorkingDirectory=/opt/flask_app
+    ExecStart=/usr/bin/gunicorn --workers 3 --bind 0.0.0.0:8080 app:app
+    Restart=always
+
+    [Install]
+    WantedBy=multi-user.target
+    SERVICE
+
+    # Start Flask on boot
+    sudo systemctl daemon-reload
+    sudo systemctl enable flask_app
+    sudo systemctl start flask_app
+
+    echo "Setup complete!"
+  EOF
 
   tags = {
     Name = "PythonAppEC2"

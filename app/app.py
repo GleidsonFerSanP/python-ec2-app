@@ -16,7 +16,7 @@ logger.addHandler(handler)
 
 app = Flask(__name__)
 
-@app.route("/rag/embeddings", methods=["POST"])
+@app.route("/rag-api/embeddings", methods=["POST"])
 def handle_request():
     try:
         logger.info("Received a request to process document.")
@@ -54,7 +54,7 @@ def handle_request():
         logger.error(f"An error occurred while processing the request: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal server error occurred"}), 500
 
-@app.route("/rag/embeddings", methods=["DELETE"])
+@app.route("/rag-api/embeddings", methods=["DELETE"])
 def delete_embeddings():
     try:
         logger.info("Received a request to process document.")
@@ -82,7 +82,7 @@ def delete_embeddings():
         logger.error(f"An error occurred while processing the request: {str(e)}", exc_info=True)
         return jsonify({"error": "An internal server error occurred"}), 500
 
-@app.route('/rag/query', methods=['POST'])
+@app.route('/rag-api/query', methods=['POST'])
 def query():
     """Performs RAG by retrieving relevant documents and generating a response."""
     data = request.json

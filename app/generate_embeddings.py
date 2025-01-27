@@ -8,8 +8,8 @@ logger.setLevel(logging.INFO)
 
 def generate(text):
     try:
-        logger.info("Generate embeddings invoked with text: %s", text)
-        logger.info("Processing text: %s", text)
+        logger.info("Generate embeddings invoked", text)
+        logger.debug("Processing text: %s", text)
         
         # Generate embedding for the text
         embeddings = generate_embeddings(text)
