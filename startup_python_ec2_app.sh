@@ -3,9 +3,6 @@
 # Exit on any error
 set -e
 
-# Log setup process for debugging
-exec > /var/log/setup.log 2>&1
-
 # Update system packages
 sudo yum update -y
 

@@ -36,9 +36,6 @@ resource "aws_instance" "python_app" {
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name 
   key_name               = "my-new-key"
   associate_public_ip_address = true
-
-  # User data script to install dependencies and run app
-  user_data = file("${path.module}/startup_python_ec2_app.sh")
   tags = {
     Name = "PythonAppEC2"
   }
