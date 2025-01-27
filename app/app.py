@@ -100,7 +100,7 @@ def query():
 
     return jsonify({"answer": answer, "retrieved_docs": retrieved_docs})
 
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8080))
-    logger.info(f"Starting Flask app on port {port}.")
-    app.run(host="0.0.0.0", port=port, debug=True)
+# if __name__ == "__main__":
+#     port = int(os.getenv("PORT", 8080))
+#     logger.info(f"Starting Flask app on port {port}.")
+#     app.run(host="0.0.0.0", port=port, debug=True)
