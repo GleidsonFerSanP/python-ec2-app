@@ -1,0 +1,29 @@
+openai
+langchain
+langchain_community
+pinecone-client
+
+
+pdf2image
+PyPDF2
+python-docx
+python-dotenv
+requests
+tiktoken
+# Manually Include NumPy & Pandas (if NOT using AWS Layers)
+pandas
+boto3
+botocore<1.34.70
+
+# AI/ML Libraries
+gensim>=4.3.3
+numpy<2.0  # Ensure compatibility with gensim, contourpy, numba
+contourpy>=1.2.0
+numba>=0.56,<0.60  # Ensure compatibility with Python <3.11
+# Async AWS SDK
+aiobotocore>=2.12.3
+
+# Streamlit and Visualization Libraries
+streamlit>=1.37.1
+pillow<11  # Ensure compatibility with strea
+flask
