@@ -8,9 +8,6 @@ venv\Scripts\activate  # Activate venv (Windows)
 
 pip install --upgrade --no-cache-dir -r requirements.txt
 
-
-    
-    
     curl -X POST 54.165.177.195:8080/rag/query \
 -H "Content-Type: application/json" \
 -d '{ "query": "faca um disclaimer sobre Jeanne Boyarsky ? responda em portugues", "subject": "rag-poc/OCP Oracle Certified Professional Java SE 8 Programmer II Study Guide Exam 1Z0-809.pdf"}'
