@@ -1,10 +1,10 @@
-import os
 import logging
 from flask import Flask, request, jsonify
 from create_chunks import create
 from generate_embeddings import generate
 from store_embeddings import store, find_documents, delete_documents
 from open_ai import generate_answer_with_context
+import threading
 
 # Initialize logging
 logger = logging.getLogger()
@@ -15,6 +15,26 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 app = Flask(__name__)
+
+def process_document_in_background(document_key):
+    try:
+        logger.info(f"Processing document with key: {document_key}")
+        
+        # Create chunks from the document
+        chunks = create(document_key)
+        logger.info(f"Generated {len(chunks)} chunks from document with key: {document_key}")
+        
+        # Process each chunk
+        for i, chunk in enumerate(chunks):
+            logger.info(f"Processing chunk {i + 1}/{len(chunks)}: {chunk[:50]}...")  # Log first 50 characters of the chunk
+            embeddings = generate(chunk)
+            logger.info(f"Generated embedding for chunk {i + 1}/{len(chunks)}.")
+            store(chunk, embeddings, document_key, i)
+            logger.info(f"Stored embedding for chunk {i + 1}/{len(chunks)}.")
+        
+        logger.info(f"Successfully processed document with key: {document_key}")
+    except Exception as e:
+        logger.error(f"Error processing document with key {document_key}: {str(e)}")
 
 @app.route("/rag-api/embeddings", methods=["POST"])
 def handle_request():
@@ -32,27 +52,17 @@ def handle_request():
             logger.error("No document_key provided in the request payload.")
             return jsonify({"error": "No document_key provided"}), 400
         
-        logger.info(f"Processing document with key: {document_key}")
+        # Start background processing
+        thread = threading.Thread(target=process_document_in_background, args=(document_key,))
+        thread.start()
         
-        # Create chunks from the document
-        chunks = create(document_key)
-        logger.info(f"Generated {len(chunks)} chunks from document with key: {document_key}")
-        
-        # Process each chunk
-        for i, chunk in enumerate(chunks):
-            logger.info(f"Processing chunk {i + 1}/{len(chunks)}: {chunk[:50]}...")  # Log first 50 characters of the chunk
-            embeddings = generate(chunk)
-            logger.info(f"Generated embedding for chunk {i + 1}/{len(chunks)}.")
-            store(chunk, embeddings, document_key, i)
-            logger.info(f"Stored embedding for chunk {i + 1}/{len(chunks)}.")
-        
-        response = {"message": f"Document with key '{document_key}' processed successfully."}
-        logger.info(f"Successfully processed document with key: {document_key}")
+        # Respond immediately
+        response = {"message": f"Document with key '{document_key}' is being processed in the background."}
+        logger.info(f"Started background processing for document with key: {document_key}")
         return jsonify(response)
-    
     except Exception as e:
-        logger.error(f"An error occurred while processing the request: {str(e)}", exc_info=True)
-        return jsonify({"error": "An internal server error occurred"}), 500
+        logger.error(f"Error handling request: {str(e)}")
+        return jsonify({"error": "An error occurred while processing the request."}), 500
 
 @app.route("/rag-api/embeddings", methods=["DELETE"])
 def delete_embeddings():
