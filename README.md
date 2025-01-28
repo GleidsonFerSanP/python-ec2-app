@@ -16,6 +16,14 @@ pip install --upgrade --no-cache-dir -r requirements.txt
 -H "Content-Type: application/json" \
 -d '{ "query": "faca um disclaimer sobre Jeanne Boyarsky ? responda em portugues", "subject": "rag-poc/OCP Oracle Certified Professional Java SE 8 Programmer II Study Guide Exam 1Z0-809.pdf"}'
 
-    curl -X POST https://ec2-54-165-177-195.compute-1.amazonaws.com//rag/query \
+    curl -X POST http://ec2-34-203-33-244.compute-1.amazonaws.com/rag-api/query \
 -H "Content-Type: application/json" \
 -d '{ "query": "faca um disclaimer sobre Jeanne Boyarsky ? responda em portugues", "subject": "rag-poc/OCP Oracle Certified Professional Java SE 8 Programmer II Study Guide Exam 1Z0-809.pdf"}'
+
+
+curl --location 'http://127.0.0.1:8000/rag-api/query' \
+--header 'Content-Type: application/json' \
+--data '{
+    "query": "faca um disclaimer sobre Jeanne Boyarsky ? responda em portugues",
+    "subject": "rag-poc/OCP Oracle Certified Professional Java SE 8 Programmer II Study Guide Exam 1Z0-809.pdf"
+}'

@@ -18,21 +18,21 @@ resource "aws_apigatewayv2_route" "python_api_route_rag_delete" {
 resource "aws_apigatewayv2_integration" "ec2_integration_rag_query" {
   api_id           = var.api_gateway_id
   integration_type = "HTTP_PROXY"
-  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag/query"
+  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag-api/query"
   integration_method = "POST"
 }
 # Create an HTTP Proxy integration for EC2
 resource "aws_apigatewayv2_integration" "ec2_integration_rag_create_embeddings" {
   api_id           = var.api_gateway_id
   integration_type = "HTTP_PROXY"
-  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag/embeddings"
+  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag-api/embeddings"
   integration_method = "POST"
 }
 # Create an HTTP Proxy integration for EC2
 resource "aws_apigatewayv2_integration" "ec2_integration_rag_delete" {
   api_id           = var.api_gateway_id
   integration_type = "HTTP_PROXY"
-  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag/embeddings"
+  integration_uri  = "http://${aws_instance.python_app.public_ip}/rag-api/embeddings"
   integration_method = "DELETE"
 }
 
